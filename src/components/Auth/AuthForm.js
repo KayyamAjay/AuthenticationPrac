@@ -15,33 +15,37 @@ const AuthForm = () => {
     event.preventDefault();
     const Email = enteredEmail.current.value;
     const Password = enteredPassword.current.value;
+    let url =
+      "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAP7NuBpJkALleoAbUF_zWdIMjoefvLhtI";
 
     if (isLogin) {
-    } else {
-      const fetchHandler = async () => {
-        const response = await fetch(
-          "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAP7NuBpJkALleoAbUF_zWdIMjoefvLhtI",
-          {
-            method: "POST",
-            body: JSON.stringify({
-              email: Email,
-              password: Password,
-              returnSecureToken: true,
-            }),
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        if (response.ok) {
-        } else {
-          const data = await response.json();
-          const Error = data.error.message;
-          console.log(Error);
-        }
-      };
-      fetchHandler();
+      url =
+        "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAP7NuBpJkALleoAbUF_zWdIMjoefvLhtI";
     }
+    const fetchHandler = async () => {
+      const response = await fetch(url, {
+        method: "POST",
+        body: JSON.stringify({
+          email: Email,
+          password: Password,
+          returnSecureToken: true,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      try {
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.error.message);
+        }
+        const data = await response.json();
+        console.log(data);
+      } catch (error) {
+        alert(error);
+      }
+    };
+    fetchHandler();
   };
 
   return (
